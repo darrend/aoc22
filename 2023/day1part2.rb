@@ -1,24 +1,28 @@
+M,R = {}
+    .tap { |m| (0..9).each { |i| m[i.to_s] = i.to_s } }
+    .tap { |m| %w[one two three four five six seven eight nine].each_with_index { |k,v| m[k] = (v + 1).to_s } }
+    .then { |m| [m, Regexp.union(m.keys)]}
+
 def process(input)
     input = input.chomp
-    original = input
-    mapping = {}
-    (0..9).each { mapping[_1.to_s] = _1 }
-    %w[one two three four five six seven eight nine].each_with_index { mapping[_1] = _2 + 1}
-    regex = Regexp.union(mapping.keys)
     digits = []
     loop do
-        match = regex.match(input)
+        match = R.match(input)
         break unless match
         offset = match&.offset(0)
         idx = offset[0]+1
         input = input[idx..]
-        digits << mapping[match.to_s]
+        digits << M[match.to_s]
     end
-    puts [original, *digits].inspect
     digits
 end
 
-puts DATA.each.collect { process(_1) }.reject(&:empty?).collect { puts _1.inspect; "#{_1.first}#{_1.last}".to_i }.reduce(:+)
+puts DATA.each
+    .collect { process(_1) }
+    .reject(&:empty?)
+    .collect { _1.first+_1.last}
+    .collect(&:to_i)
+    .reduce(:+)
 __END__
 3fiveone
 eightnineseventwo1seven
